@@ -7,15 +7,16 @@
     "build": "sui move build",
     "test": "sui move test",
     "predeploy": "yarn build",
-    "deploy": "sui client --client.config .sui/config.yaml publish --gas-budget 999999999",
-    "postdeploy": "node ./scripts/initialize_contracts.js",
-    "register": "node ./scripts/register_coins.js",
+    "deploy": "sui client --client.config .sui/config.yaml publish --json --gas-budget 999999999 > ./deployed.json",
+    "postdeploy": "node ./scripts/get_metadata.js",
+    "initialize": "node ./scripts/initialize_contracts.js",
+    "mint": "node ./scripts/mint.js",
     "swap": "node ./scripts/swap.js"
   },
   "dependencies": {
     "@mesonfi/contract-abis": "^1.7.0",
-    "@mesonfi/presets": "^1.8.0-alpha.1",
-    "@mesonfi/sdk": "^1.8.0-alpha.1",
+    "@mesonfi/presets": "^1.8.0-alpha.4",
+    "@mesonfi/sdk": "^1.8.0-alpha.4",
     "@mysten/sui.js": "^0.32.1",
     "dotenv": "^16.0.3",
     "ethers": "^5.7.1"

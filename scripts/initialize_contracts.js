@@ -12,11 +12,6 @@ presets.useTestnet(use_testnet)
 
 dotenv.config()
 
-const {
-  SUI_LP_PRIVATE_KEY,
-  AMOUNT_TO_DEPOSIT,
-} = process.env
-
 initialize()
 
 async function initialize() {
@@ -31,11 +26,11 @@ async function initialize() {
   // add supported tokens
   const storeC = {}
   for (const coin of network.tokens) {
-    // console.log(`addSupportToken (${coin.symbol})`)
-    // const tx = await mesonClient.mesonInstance.addSupportToken(coin.addr, coin.tokenIndex)
-    // const addTx = await tx.wait()
+    console.log(`addSupportToken (${coin.symbol})`)
+    const tx = await mesonClient.mesonInstance.addSupportToken(coin.addr, coin.tokenIndex)
+    const addTx = await tx.wait()
 
-    // storeC[coin.tokenIndex.toString()] = addTx.changes.find(obj => obj.objectType.includes('StoreForCoin'))?.objectId
+    storeC[coin.tokenIndex.toString()] = addTx.changes.find(obj => obj.objectType.includes('StoreForCoin'))?.objectId
   }
   console.log('storeC', storeC)
 
@@ -53,28 +48,4 @@ async function initialize() {
   // const tx = await wallet.sendTransaction(txBlock)
   // console.log(`TransferPremiumManager: ${tx.hash}`)
   // await tx.wait()
-
-  if (!AMOUNT_TO_DEPOSIT) {
-    return
-  }
-
-  const lp = adaptors.getWallet(SUI_LP_PRIVATE_KEY, client)
-
-  let registered = true // Registered in meson
-  for (const coin of network.tokens) {
-    console.log(`Depositing ${AMOUNT_TO_DEPOSIT} ${coin.symbol}...`)
-
-    const value = utils.parseUnits(AMOUNT_TO_DEPOSIT, coin.decimals)
-    const poolTokenIndex = coin.tokenIndex * 2**40 + 1
-
-    let tx
-    if (registered) {
-      tx = await mesonClient.mesonInstance.connect(lp).deposit(value, poolTokenIndex)
-    } else {
-      tx = await mesonClient.mesonInstance.connect(lp).depositAndRegister(value, poolTokenIndex)
-    }
-    await tx.wait()
-    
-    registered = true
-  }
 }

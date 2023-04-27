@@ -8,11 +8,9 @@ const presets = require('@mesonfi/presets').default
 const networkId = 'sui-testnet'
 presets.useTestnet(true)
 
-module.exports = { mint }
+mint('1000000')
 
-mint('0x612ab2d8d1d9f250b458fb5e41b4c7989d5997cb67f8263b65a79dbac541d631', '1000000')
-
-async function mint(to, amount) {
+async function mint(amount, to) {
   const keystore = fs.readFileSync(path.join(__dirname, '../.sui/sui.keystore'))
   const privateKey = utils.hexlify(fromB64(JSON.parse(keystore)[0])).replace('0x01', '0x')
 
@@ -20,6 +18,7 @@ async function mint(to, amount) {
   const client = presets.createNetworkClient(networkId, [network.url])
   const wallet = adaptors.getWallet(privateKey, client)
   const mesonClient = presets.createMesonClient(networkId, wallet)
+  const mintTo = to || wallet.address
 
   let coinObjectList = {}
   for (const coin of network.tokens) {
@@ -29,7 +28,7 @@ async function mint(to, amount) {
     const symbol = await coinContract.symbol()
     const decimals = await coinContract.decimals()
 
-    console.log(`Mint ${amount} ${symbol} to ${to}...`)
+    console.log(`Mint ${amount} ${symbol} to ${mintTo}...`)
 
     const tx = await mesonClient.mesonInstance.call(
       '0x2::coin::mint_and_transfer',
@@ -37,7 +36,7 @@ async function mint(to, amount) {
         arguments: [
           txBlock.object(metadata.treasuryCap[coin.tokenIndex.toString()]),
           txBlock.pure(utils.parseUnits(amount, decimals)),
-          txBlock.pure(to)
+          txBlock.pure(mintTo)
         ],
         typeArguments: [coin.addr],
       })
@@ -47,7 +46,7 @@ async function mint(to, amount) {
     const coinObject = minted.changes.find(obj => obj.type == 'created')?.objectId
     console.log(`Minted. Object created:`, coinObject)
 
-    console.log(`Current balance:`, utils.formatUnits(await coinContract.balanceOf(to), decimals), symbol)
+    console.log(`Current balance:`, utils.formatUnits(await coinContract.balanceOf(mintTo), decimals), symbol)
     coinObjectList[symbol] = coinObject
   }
 
