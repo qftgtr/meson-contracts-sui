@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {
-    "prepare": "node ./scripts/prepare_wallet.js",
+    "wallet": "node ./scripts/prepare_wallet.js",
     "build": "sui move build",
     "test": "sui move test",
     "predeploy": "yarn build",
