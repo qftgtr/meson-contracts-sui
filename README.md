@@ -14,3 +14,7 @@
 1. Run `yarn initialize` to add supported tokens to Meson's contract.
 2. (Testnet only) Run `yarn mint` to mint tokens.
 3. Register a pool or add tokens to the pool using the script in `meson-contracts-solidity`
+
+### Perform a swap
+
+1. Just run `yarn swap`.

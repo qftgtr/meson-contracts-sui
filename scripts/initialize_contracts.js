@@ -6,9 +6,9 @@ const { utils } = require('ethers')
 const { adaptors } = require('@mesonfi/sdk')
 const presets = require('@mesonfi/presets').default
 
-const use_testnet = true
-const networkId = use_testnet ? 'sui-testnet' : 'sui'
-presets.useTestnet(use_testnet)
+const testnetMode = true
+const networkId = testnetMode ? 'sui-testnet' : 'sui'
+presets.useTestnet(testnetMode)
 
 dotenv.config()
 
